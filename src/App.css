@@ -2,3 +2,15 @@
     display: flex;
     justify-content: center;
 }
+
+#tsparticles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.app-content {
+    position: relative;
+    z-index: 1;
+}

@@ -85,11 +85,13 @@ function App() {
         particlesLoaded={particlesLoaded}
         options={options}
       />
-      <Navigation />
-      <Logo />
-      <Rank />
-      <ImageLinkForm />
-      {/* <FaceRecognition />*/}
+      <main className="app-content">
+        <Navigation />
+        <Logo />
+        <Rank />
+        <ImageLinkForm />
+        {/* <FaceRecognition />*/}
+      </main>
     </ParticlesProvider>
   );
 }
