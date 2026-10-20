@@ -10,6 +10,7 @@ import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
 import Rank from "./components/Rank/Rank";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
 import SignIn from "./components/SignIn/SigIn";
+import Register from "./components/Register/Register";
 
 const particlesInit = async (engine) => {
   await loadSlim(engine);
@@ -20,7 +21,7 @@ function App() {
   const [imageURL, setImageURL] = useState("");
   const [boxes, setBoxes] = useState([]);
   const [route, setRoute] = useState("");
-  const [isSignedIn, setIsSignedIn] = useState(Boolean);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [user, setUser] = useState({
     id: "",
     name: "",
@@ -206,10 +207,15 @@ function App() {
               <FaceRecognition imageURL={imageURL} boxes={boxes} />
             </div>
           ) : route === "signin" ? (
-            <SignIn loadUser={loadUser} onRouteChange={onRouteChange} />
+            <>
+              <Logo />
+              <SignIn loadUser={loadUser} onRouteChange={onRouteChange} />
+            </>
           ) : (
-                // <Register loadUser={loadUser} onRouteChange={onRouteChange} />
-                ""
+            <>
+              <Logo />
+              <Register loadUser={loadUser} onRouteChange={onRouteChange} />
+            </>
           )}
         </main>
       </ParticlesProvider>
