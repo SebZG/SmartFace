@@ -9,6 +9,7 @@ import Logo from "./components/Logo/Logo";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
 import Rank from "./components/Rank/Rank";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
+import SignIn from "./components/SignIn/SigIn";
 
 const particlesInit = async (engine) => {
   await loadSlim(engine);
@@ -205,9 +206,10 @@ function App() {
               <FaceRecognition imageURL={imageURL} boxes={boxes} />
             </div>
           ) : route === "signin" ? (
-            <Signin />
+            <SignIn loadUser={loadUser} onRouteChange={onRouteChange} />
           ) : (
-            <Register />
+                // <Register loadUser={loadUser} onRouteChange={onRouteChange} />
+                ""
           )}
         </main>
       </ParticlesProvider>
