@@ -195,7 +195,7 @@ function App() {
           {route === "home" ? (
             <div>
               <Logo />
-              <Rank />
+              <Rank name={user.name} entries={user.entries} />
               <ImageLinkForm />
               {/* <FaceRecognition />*/}
             </div>
