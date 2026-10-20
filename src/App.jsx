@@ -1,12 +1,14 @@
 import "./App.css";
-import Navigation from "./components/Navigation/Navigation";
-import Logo from "./components/Logo/Logo";
-import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
-import Rank from "./components/Rank/Rank";
 
 import { useCallback, useMemo, useState } from "react";
 import Particles, { ParticlesProvider } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
+
+import Navigation from "./components/Navigation/Navigation";
+import Logo from "./components/Logo/Logo";
+import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
+import Rank from "./components/Rank/Rank";
+import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
 
 const particlesInit = async (engine) => {
   await loadSlim(engine);
@@ -14,11 +16,11 @@ const particlesInit = async (engine) => {
 
 function App() {
   const [input, setInput] = useState("");
-  const [imageURL, setImageURL] = userState("");
-  const [boxes, setBoxes] = userState([]);
-  const [route, setRoute] = userState("");
-  const [isSignedIn, setIsSignedIn] = userState(Boolean);
-  const [user, setUser] = userState({
+  const [imageURL, setImageURL] = useState("");
+  const [boxes, setBoxes] = useState([]);
+  const [route, setRoute] = useState("");
+  const [isSignedIn, setIsSignedIn] = useState(Boolean);
+  const [user, setUser] = useState({
     id: "",
     name: "",
     email: "",
@@ -191,7 +193,7 @@ function App() {
           options={options}
         />
         <main className="app-content">
-          <Navigation />
+          <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
           {route === "home" ? (
             <div>
               <Logo />
@@ -200,7 +202,7 @@ function App() {
                 onInputChange={onInputChange}
                 onButtonSubmit={onButtonSubmit}
               />
-              {/* <FaceRecognition />*/}
+              <FaceRecognition imageURL={imageURL} boxes={boxes} />
             </div>
           ) : route === "signin" ? (
             <Signin />
