@@ -1,0 +1,35 @@
+.tilt {
+    background: linear-gradient(89deg, #ff5edf 0%, #04c8de 100%);
+}
+
+.track-on-window {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    background-color: darkgreen;
+    color: white;
+    border: 1px solid black;
+    border-radius: 20px;
+
+    transform-style: preserve-3d;
+
+    .inner-element {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 1em;
+        font-style: italic;
+        color: white;
+        transform: translateZ(60px);
+
+        img {
+            height: auto;
+            width: 75%;
+        }
+    }
+    
+}
