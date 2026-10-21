@@ -1,8 +1,26 @@
+.face-image-wrapper {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+.face-image-wrapper img {
+  display: block;
+}
+
+.loading-indicator {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(255 255 255 / 55%);
+  line-height: normal;
+  z-index: 2;
+}
+
 .bounding-box {
   position: absolute;
-  box-shadow: 0 0 0 3px #149df2 inset;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  cursor: pointer;
+  box-sizing: border-box;
+  border: 3px solid #149df2;
+  pointer-events: none;
 }
