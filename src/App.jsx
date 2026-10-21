@@ -20,8 +20,8 @@ function App() {
   const [input, setInput] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [boxes, setBoxes] = useState([]);
-  const [route, setRoute] = useState("");
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [route, setRoute] = useState("home");
+  const [isSignedIn, setIsSignedIn] = useState(true);
   const [user, setUser] = useState({
     id: "",
     name: "",
@@ -30,16 +30,8 @@ function App() {
     joined: "",
   });
 
-  function loadUser({ id, name, email, entries, joined }) {
-    setUser({
-      user: {
-        id,
-        name,
-        email,
-        entries,
-        joined,
-      },
-    });
+  function loadUser(userData) {
+    setUser(userData);
   }
 
   function createBoundingBox(pixelBox, imageWidth, imageHeight) {
@@ -96,7 +88,7 @@ function App() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${"YOUR_API_KEY_HERE"}`,
+            Authorization: `Bearer ${"YOUR KEY HERE"}`,
             "Content-Type": contentType,
           },
           body: imageBlob,
@@ -112,12 +104,11 @@ function App() {
   }
 
   function onRouteChange(route) {
-    route === "signout"
-      ? setIsSignedIn(false)
-      : route === "home"
-        ? setIsSignedIn(true)
-        : setIsSignedIn(false);
-
+    if (route === "signout") {
+      setIsSignedIn(false);
+    } else if (route === "home") {
+      setIsSignedIn(true);
+    }
     setRoute(route);
   }
 
@@ -197,7 +188,7 @@ function App() {
         <main className="app-content">
           <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
           {route === "home" ? (
-            <div>
+            <>
               <Logo />
               <Rank name={user.name} entries={user.entries} />
               <ImageLinkForm
@@ -205,7 +196,7 @@ function App() {
                 onButtonSubmit={onButtonSubmit}
               />
               <FaceRecognition imageURL={imageURL} boxes={boxes} />
-            </div>
+            </>
           ) : route === "signin" ? (
             <>
               <Logo />
