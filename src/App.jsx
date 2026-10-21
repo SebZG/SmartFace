@@ -19,7 +19,6 @@ const particlesInit = async (engine) => {
 function App() {
   const [input, setInput] = useState("");
   const [imageURL, setImageURL] = useState("");
-  const [boxes, setBoxes] = useState([]);
   const [route, setRoute] = useState("home");
   const [isSignedIn, setIsSignedIn] = useState(true);
   const [user, setUser] = useState({
@@ -34,82 +33,24 @@ function App() {
     setUser(userData);
   }
 
-  function createBoundingBox(pixelBox, imageWidth, imageHeight) {
-    return {
-      left_col: pixelBox.xmin / imageWidth,
-      top_row: pixelBox.ymin / imageHeight,
-      right_col: pixelBox.xmax / imageWidth,
-      bottom_row: pixelBox.ymax / imageHeight,
-    };
-  }
-
-  function calculateFaceLocation(data) {
-    // Get ALL items labeled "person" instead of just the first one
-    const personItems = data.filter((item) => item.label === "person");
-
-    // With new HuggingFace API we need display width as well as original image width
-    const image = document.getElementById("inputimage");
-    const originalWidth = Number(image.naturalWidth);
-    const originalHeight = Number(image.naturalHeight);
-    const width = Number(image.width);
-    const height = Number(image.height);
-
-    // Loop through every person found and calculate their box
-    const boundingBoxes = personItems.map((person) => {
-      const face = createBoundingBox(person.box, originalWidth, originalHeight);
-      return {
-        leftCol: face.left_col * width,
-        topRow: face.top_row * height,
-        rightCol: width - face.right_col * width,
-        bottomRow: height - face.bottom_row * height,
-      };
-    });
-
-    return boundingBoxes;
-  }
-
-  function displayFaceBox(boxes) {
-    setBoxes(boxes);
-  }
-
   function onInputChange(e) {
     setInput(e.target.value);
   }
 
   function onButtonSubmit() {
     setImageURL(input);
-    const sendImageToHuggingFaceWithFetch = async (imageURL) => {
-      const imageRes = await fetch(imageURL);
-      const imageBlob = await imageRes.blob();
-      const contentType = imageRes.headers.get("content-type");
-
-      const apiResponse = await fetch(
-        "https://router.huggingface.co/hf-inference/models/facebook/detr-resnet-50",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${"YOUR KEY HERE"}`,
-            "Content-Type": contentType,
-          },
-          body: imageBlob,
-        },
-      );
-
-      const result = await apiResponse.json();
-      console.log(result);
-      displayFaceBox(calculateFaceLocation(result));
-    };
-
-    sendImageToHuggingFaceWithFetch(input);
   }
 
-  function onRouteChange(route) {
-    if (route === "signout") {
+  function onRouteChange(nextRoute) {
+    if (nextRoute === "signout") {
       setIsSignedIn(false);
-    } else if (route === "home") {
+      setImageURL("");
+      setInput("");
+    } else if (nextRoute === "home") {
       setIsSignedIn(true);
     }
-    setRoute(route);
+
+    setRoute(nextRoute);
   }
 
   const particlesLoaded = useCallback(async (container) => {
@@ -195,7 +136,7 @@ function App() {
                 onInputChange={onInputChange}
                 onButtonSubmit={onButtonSubmit}
               />
-              <FaceRecognition imageURL={imageURL} boxes={boxes} />
+              {imageURL && <FaceRecognition imageURL={imageURL} />}
             </>
           ) : route === "signin" ? (
             <>
