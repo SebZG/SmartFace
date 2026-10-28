@@ -15,7 +15,7 @@ const SignIn = ({ loadUser, onRouteChange }) => {
   }
 
   async function onSubmitSignIn() {
-    const res = await fetch("http://localhost:5173/signin", {
+    const res = await fetch("http://localhost:3000/signin", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -24,17 +24,29 @@ const SignIn = ({ loadUser, onRouteChange }) => {
       }),
     });
 
-    const user = await res.json();
+    const signIn = await res.json();
+    console.log(signIn); // success/error
 
-    // TODO: Update to talk to backend/databsae later
-    if (user.id) {
-      loadUser(user);
+    if (signIn === "success") {
+      loadUser({
+        id: "001",
+        name: "Seb",
+        email: "seb@gmail.com",
+        password: "123123",
+        entries: 0,
+        joined: new Date(),
+      });
       onRouteChange("home");
+    } else {
+      console.log(signIn);
     }
   }
 
   return (
-    <article id="signin-form" className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
+    <article
+      id="signin-form"
+      className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center"
+    >
       <main className="pa4 black-80">
         <div className="measure">
           <fieldset id="sign_in" className="ba b--transparent ph0 mh0">

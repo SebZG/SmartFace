@@ -8,11 +8,13 @@ const {
   compare,
   parseOptions,
 } = require("@node-rs/bcrypt");
+const cors = require("cors");
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors());
 
 const database = {
   users: [
@@ -60,8 +62,9 @@ app.post("/signin", async (req, res) => {
   ) {
     res.json("success");
   } else {
-    res.status(400).json("Error...");
+    res.status(400).json("email + password combination does not match");
   }
+  
   // res.send("signin in");
   // res.json("signin in");
 });

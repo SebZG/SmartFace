@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import Particles, { ParticlesProvider } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 
@@ -19,8 +19,8 @@ const particlesInit = async (engine) => {
 function App() {
   const [input, setInput] = useState("");
   const [imageURL, setImageURL] = useState("");
-  const [route, setRoute] = useState("home");
-  const [isSignedIn, setIsSignedIn] = useState(true);
+  const [route, setRoute] = useState("signin");
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [user, setUser] = useState({
     id: "",
     name: "",
@@ -28,6 +28,15 @@ function App() {
     entries: 0,
     joined: "",
   });
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const res = await fetch("http://localhost:3000/");
+  //     const data = await res.json();
+  //     console.log(data);
+  //   }
+  //   fetchData();
+  // }, []);
 
   function loadUser(userData) {
     setUser(userData);
