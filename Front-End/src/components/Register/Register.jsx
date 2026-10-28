@@ -29,17 +29,28 @@ const Register = ({ loadUser, onRouteChange }) => {
         password,
       }),
     });
-    const user = res.json();
+    const user = await res.json();
+    console.log(user); // user data
+    const { name, email, password } = user;
 
-    // TODO: Update to talk to backend/databsae later
     if (user) {
-      loadUser(user);
+      loadUser({
+        id: "003",
+        name: name,
+        email: email,
+        password: password,
+        entries: 0,
+        joined: new Date(),
+      });
       onRouteChange("home");
     }
   }
 
   return (
-    <article id="register-form" className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
+    <article
+      id="register-form"
+      className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center"
+    >
       <main className="pa4 black-80">
         <div className="measure">
           <fieldset id="register" className="ba b--transparent ph0 mh0">

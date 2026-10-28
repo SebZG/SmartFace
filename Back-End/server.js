@@ -53,9 +53,10 @@ app.get("/", (req, res) => {
 });
 
 app.post("/signin", async (req, res) => {
-  const storedPassword = "$2b$12$nMAljzHCiWCA2jjmucttD.ZuVarRB9wX4jazFEzKlc9KLTe50FWFC"
+  const storedPassword =
+    "$2b$12$nMAljzHCiWCA2jjmucttD.ZuVarRB9wX4jazFEzKlc9KLTe50FWFC";
   console.log(await verify(req.body.password, storedPassword));
-  
+
   if (
     req.body.email === database.users[0].email &&
     req.body.password === database.users[0].password
@@ -64,9 +65,6 @@ app.post("/signin", async (req, res) => {
   } else {
     res.status(400).json("email + password combination does not match");
   }
-  
-  // res.send("signin in");
-  // res.json("signin in");
 });
 
 app.post("/register", async (req, res) => {
@@ -74,18 +72,17 @@ app.post("/register", async (req, res) => {
 
   const storedHash = await hash(password, { cost: 12 });
   console.log(storedHash);
-  // await verify(password, storedHash);
 
   database.users.push({
     id: "003",
     name: name,
     email: email,
-    password: password,
+    password: storedHash,
     entries: 0,
     joined: new Date(),
   });
 
-  res.json("Success");
+  res.json(database.users[database.users.length - 1]);
 });
 
 app.get("/profile/:id", (req, res) => {

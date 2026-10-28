@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Particles, { ParticlesProvider } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 
@@ -29,15 +29,6 @@ function App() {
     joined: "",
   });
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const res = await fetch("http://localhost:3000/");
-  //     const data = await res.json();
-  //     console.log(data);
-  //   }
-  //   fetchData();
-  // }, []);
-
   function loadUser(userData) {
     setUser(userData);
   }
@@ -55,11 +46,23 @@ function App() {
       setIsSignedIn(false);
       setImageURL("");
       setInput("");
+      setRoute("signin");
+    } else if (nextRoute === "signin") {
+      setIsSignedIn(false);
+      setImageURL("");
+      setInput("");
+      setRoute("signin");
+    } else if (nextRoute === "register") {
+      setIsSignedIn(false);
+      setImageURL("");
+      setInput("");
+      setRoute("register");
     } else if (nextRoute === "home") {
       setIsSignedIn(true);
+      setImageURL("");
+      setInput("");
+      setRoute("home");
     }
-
-    setRoute(nextRoute);
   }
 
   const particlesLoaded = useCallback(async (container) => {
