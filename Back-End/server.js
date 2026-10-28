@@ -1,4 +1,13 @@
 const express = require("express");
+const {
+  hash,
+  hashSync,
+  verify,
+  verifySync,
+  genSalt,
+  compare,
+  parseOptions,
+} = require("@node-rs/bcrypt");
 
 const app = express();
 
@@ -41,7 +50,10 @@ app.get("/", (req, res) => {
   res.json(database.users);
 });
 
-app.post("/signin", (req, res) => {
+app.post("/signin", async (req, res) => {
+  const storedPassword = "$2b$12$nMAljzHCiWCA2jjmucttD.ZuVarRB9wX4jazFEzKlc9KLTe50FWFC"
+  console.log(await verify(req.body.password, storedPassword));
+  
   if (
     req.body.email === database.users[0].email &&
     req.body.password === database.users[0].password
@@ -54,8 +66,12 @@ app.post("/signin", (req, res) => {
   // res.json("signin in");
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
+
+  const storedHash = await hash(password, { cost: 12 });
+  console.log(storedHash);
+  // await verify(password, storedHash);
 
   database.users.push({
     id: "003",
