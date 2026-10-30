@@ -1,41 +1,38 @@
-const express = require("express");
+const { handleSignin } = require("./controllers/signin");
+const { handleRegister } = require("./controllers/register");
+const { handleProfile } = require("./controllers/profile");
+const { handleImage } = require("./controllers/image");
+
+require("dotenv").config();
+
 const {
   hash,
-  hashSync,
   verify,
-  verifySync,
   genSalt,
   compare,
   parseOptions,
 } = require("@node-rs/bcrypt");
-const cors = require("cors");
 
+const knex = require("knex");
+const db = knex({
+  client: "pg",
+  connection: {
+    host: process.env.DB_HOST,
+    API_PORT: process.env.DB_API_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+  },
+});
+// console.log(db.select("*").from("users").then((data) => console.log(data)));
+
+const cors = require("cors");
+const express = require("express");
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
-
-const database = {
-  users: [
-    {
-      id: "001",
-      name: "Seb",
-      email: "seb@gmail.com",
-      password: "123123",
-      entries: 0,
-      joined: new Date(),
-    },
-    {
-      id: "002",
-      name: "Juan",
-      email: "juan@gmail.com",
-      password: "123123",
-      entries: 0,
-      joined: new Date(),
-    },
-  ],
-};
 
 /*
 
@@ -49,75 +46,28 @@ ROUTES:
 */
 
 app.get("/", (req, res) => {
-  res.json(database.users);
+  res.json("Welcome to SmartFace!");
 });
 
-app.post("/signin", async (req, res) => {
-  const storedPassword =
-    "$2b$12$nMAljzHCiWCA2jjmucttD.ZuVarRB9wX4jazFEzKlc9KLTe50FWFC";
-  console.log(await verify(req.body.password, storedPassword));
-
-  if (
-    req.body.email === database.users[0].email &&
-    req.body.password === database.users[0].password
-  ) {
-    res.json("success");
-  } else {
-    res.status(400).json("email + password combination does not match");
-  }
+app.post("/signin", (req, res) => {
+  handleSignin(req, res, db, verify);
 });
 
-app.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
-
-  const storedHash = await hash(password, { cost: 12 });
-  console.log(storedHash);
-
-  database.users.push({
-    id: "003",
-    name: name,
-    email: email,
-    password: storedHash,
-    entries: 0,
-    joined: new Date(),
-  });
-
-  res.json(database.users[database.users.length - 1]);
+app.post("/register", (req, res) => {
+  handleRegister(req, res, db, hash);
 });
 
-app.get("/profile/:id", (req, res) => {
-  const { id } = req.params;
-  let found = false;
-
-  database.users.forEach((user) => {
-    if (user.id === id) {
-      found = true;
-      return res.json(user);
-    }
-  });
-
-  if (!found) {
-    res.status(400).json("Not found");
-  }
+app.get("/profile/:id", async (req, res) => {
+  handleProfile(req, res, db);
 });
 
-app.post("/image", (req, res) => {
-  const { id } = req.body;
-  let found = false;
-
-  database.users.forEach((user) => {
-    if (user.id === id) {
-      found = true;
-      user.entries++;
-      return res.json(user.entries);
-    }
-  });
-
-  if (!found) {
-    res.status(400).json("Not found");
-  }
+app.put("/image", async (req, res) => {
+  handleImage(req, res, db);
 });
 
-app.listen(3000, () => {
-  console.log(`App is running on port: http://localhost:${3000}`);
+const API_PORT = process.env.API_PORT;
+app.listen(API_PORT, () => {
+  console.log(`App is running on API_PORT: http://localhost:${API_PORT}`);
 });
+
+console.log("API_PORT: ", API_PORT);

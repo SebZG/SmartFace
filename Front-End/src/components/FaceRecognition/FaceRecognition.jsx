@@ -1,6 +1,5 @@
 import "./FaceRecognition.css";
 
-// import "@mediapipe/face_detection";
 import "@tensorflow/tfjs-core";
 // Register WebGL backend.
 import "@tensorflow/tfjs-backend-webgl";
@@ -8,15 +7,16 @@ import * as faceDetection from "@tensorflow-models/face-detection";
 
 import { useCallback, useEffect, useState, useRef } from "react";
 
-const FaceRecognition = ({ imageURL }) => {
+const FaceRecognition = ({ imageURL, userId, onDetectionSuccess }) => {
   const imageRef = useRef(null);
   const detectorRef = useRef(null);
+  const detectionIdRef = useRef(0);
+  const countedImageRef = useRef("");
   const [detector, setDetector] = useState(null);
   const [boxes, setBoxes] = useState([]);
-  const [error, setError] = useState("");
-  const [isModelLoading, setIsModelLoading] = useState(true);
   const [isDetecting, setIsDetecting] = useState(false);
-  const detectionIdRef = useRef(0);
+  const [isModelLoading, setIsModelLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -28,10 +28,6 @@ const FaceRecognition = ({ imageURL }) => {
         const model = faceDetection.SupportedModels.MediaPipeFaceDetector;
         const detectorConfig = {
           runtime: "tfjs",
-          // solutionPath: // Only for MediaPipeFaceDetector
-          // "https://cdn.jsdelivr.net/npm/@mediapipe/face_detection",
-          // 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection',
-          // or 'base/node_modules/@mediapipe/face_detection' in npm.
           maxFaces: 10,
           modelType: "short", // or 'full'
         };
@@ -75,8 +71,8 @@ const FaceRecognition = ({ imageURL }) => {
       return;
     }
 
-    setBoxes([]);
     const detectionId = ++detectionIdRef.current;
+    setBoxes([]);
     setIsDetecting(true);
     setError("");
 
@@ -105,6 +101,11 @@ const FaceRecognition = ({ imageURL }) => {
           height: box.height * scaleY,
         })),
       );
+
+      if (faces.length > 0 && countedImageRef.current !== imageURL) {
+        await onDetectionSuccess(userId);
+        countedImageRef.current = imageURL;
+      }
     } catch (err) {
       if (detectionId === detectionIdRef.current) {
         setError("Unable to detect faces in this image.");
@@ -115,7 +116,7 @@ const FaceRecognition = ({ imageURL }) => {
         setIsDetecting(false);
       }
     }
-  }, [detector]);
+  }, [detector, imageURL, onDetectionSuccess, userId]);
 
   useEffect(() => {
     detectionIdRef.current += 1;
@@ -148,6 +149,7 @@ const FaceRecognition = ({ imageURL }) => {
           crossOrigin="anonymous"
         />
 
+        {/* Loading indicator */}
         {(isModelLoading || isDetecting) && (
           <p className="loading-indicator" role="status">
             {isModelLoading ? "Loading face detector..." : "Detecting faces..."}

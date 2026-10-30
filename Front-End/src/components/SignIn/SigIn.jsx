@@ -5,40 +5,39 @@ import { useState } from "react";
 const SignIn = ({ loadUser, onRouteChange }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   function onEmailChange(e) {
     setEmail(e.target.value);
+    setError("");
   }
 
   function onPasswordChange(e) {
     setPassword(e.target.value);
+    setError("");
   }
 
-  async function onSubmitSignIn() {
-    const res = await fetch("http://localhost:3000/signin", {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+  async function onSubmitSignIn(e) {
+    e.preventDefault();
 
-    const signIn = await res.json();
-    console.log(signIn); // success/error
-
-    if (signIn === "success") {
-      loadUser({
-        id: "001",
-        name: "Seb",
-        email: "seb@gmail.com",
-        password: "123123",
-        entries: 0,
-        joined: new Date(),
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/signin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
+      const user = await res.json();
+
+      if (!res.ok || !user.id) {
+        setError("Incorrect email or password.");
+        return;
+      }
+
+      loadUser(user);
       onRouteChange("home");
-    } else {
-      console.log(signIn);
+    } catch (err) {
+      console.error("Sign-in failed:", err);
+      setError("Unable to sign in. Please try again.");
     }
   }
 
@@ -48,9 +47,14 @@ const SignIn = ({ loadUser, onRouteChange }) => {
       className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center"
     >
       <main className="pa4 black-80">
-        <div className="measure">
+        <form className="measure" onSubmit={onSubmitSignIn}>
           <fieldset id="sign_in" className="ba b--transparent ph0 mh0">
             <legend className="f1 fw6 ph0 mh0">Sign In</legend>
+            {error && (
+              <p className="red" role="alert">
+                {error}
+              </p>
+            )}
             <div className="mt3">
               <label className="db fw6 lh-copy f6" htmlFor="email-address">
                 Email
@@ -61,8 +65,10 @@ const SignIn = ({ loadUser, onRouteChange }) => {
                 type="email"
                 name="email-address"
                 onChange={onEmailChange}
+                required
               />
             </div>
+
             <div className="mv3">
               <label className="db fw6 lh-copy f6" htmlFor="password">
                 Password
@@ -73,17 +79,20 @@ const SignIn = ({ loadUser, onRouteChange }) => {
                 type="password"
                 name="password"
                 onChange={onPasswordChange}
+                required
               />
             </div>
           </fieldset>
-          <div className="">
-            <input
+
+          <div>
+            <button
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
               type="submit"
-              value="sign in"
-              onClick={onSubmitSignIn}
-            />
+            >
+              Sign in
+            </button>
           </div>
+
           <div className="lh-copy mt3">
             <p
               onClick={() => onRouteChange("register")}
@@ -92,7 +101,7 @@ const SignIn = ({ loadUser, onRouteChange }) => {
               Register
             </p>
           </div>
-        </div>
+        </form>
       </main>
     </article>
   );

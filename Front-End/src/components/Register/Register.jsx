@@ -6,43 +6,44 @@ const Register = ({ loadUser, onRouteChange }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   function onNameChange(e) {
     setName(e.target.value);
+    setError("");
   }
 
   function onEmailChange(e) {
     setEmail(e.target.value);
+    setError("");
   }
 
   function onPasswordChange(e) {
     setPassword(e.target.value);
+    setError("");
   }
 
-  async function onSubmitSignIn() {
-    const res = await fetch("http://localhost:3000/register", {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
-    });
-    const user = await res.json();
-    console.log(user); // user data
-    const { name, email, password } = user;
+  async function onSubmitRegister(e) {
+    e.preventDefault();
 
-    if (user) {
-      loadUser({
-        id: "003",
-        name: name,
-        email: email,
-        password: password,
-        entries: 0,
-        joined: new Date(),
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
       });
+      const user = await res.json();
+
+      if (!res.ok || !user.id) {
+        setError("Unable to create account. Please check your details and try again.");
+        return;
+      }
+
+      loadUser(user);
       onRouteChange("home");
+    } catch (err) {
+      console.error("Registration failed:", err);
+      setError("Unable to register. Please try again.");
     }
   }
 
@@ -52,9 +53,14 @@ const Register = ({ loadUser, onRouteChange }) => {
       className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center"
     >
       <main className="pa4 black-80">
-        <div className="measure">
+        <form className="measure" onSubmit={onSubmitRegister}>
           <fieldset id="register" className="ba b--transparent ph0 mh0">
             <legend className="f1 fw6 ph0 mh0">Register</legend>
+            {error && (
+              <p className="red" role="alert">
+                {error}
+              </p>
+            )}
             <div className="mt3">
               <label className="db fw6 lh-copy f6" htmlFor="name">
                 Name
@@ -65,8 +71,10 @@ const Register = ({ loadUser, onRouteChange }) => {
                 name="name"
                 id="name"
                 onChange={onNameChange}
+                required
               />
             </div>
+
             <div className="mt3">
               <label className="db fw6 lh-copy f6" htmlFor="email-address">
                 Email
@@ -77,8 +85,10 @@ const Register = ({ loadUser, onRouteChange }) => {
                 name="email-address"
                 id="email-address"
                 onChange={onEmailChange}
+                required
               />
             </div>
+
             <div className="mv3">
               <label className="db fw6 lh-copy f6" htmlFor="password">
                 Password
@@ -89,17 +99,20 @@ const Register = ({ loadUser, onRouteChange }) => {
                 name="password"
                 id="password"
                 onChange={onPasswordChange}
+                required
               />
             </div>
           </fieldset>
-          <div className="">
-            <input
+
+          <div>
+            <button
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
               type="submit"
-              value="Register"
-              onClick={onSubmitSignIn}
-            />
+            >
+              Register
+            </button>
           </div>
+
           <div className="lh-copy mt3">
             <p
               onClick={() => onRouteChange("signin")}
@@ -108,7 +121,7 @@ const Register = ({ loadUser, onRouteChange }) => {
               Sign In
             </p>
           </div>
-        </div>
+        </form>
       </main>
     </article>
   );

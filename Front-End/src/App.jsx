@@ -12,6 +12,7 @@ import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
 import SignIn from "./components/SignIn/SigIn";
 import Register from "./components/Register/Register";
 
+// Load the particles engine with the slim preset
 const particlesInit = async (engine) => {
   await loadSlim(engine);
 };
@@ -41,32 +42,60 @@ function App() {
     setImageURL(input);
   }
 
+  const onDetectionSuccess = useCallback(async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/image`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: user.id,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Unable to update entries");
+      }
+
+      const updatedEntries = await res.json();
+
+      setUser((currentUser) => ({
+        ...currentUser,
+        entries: Number(updatedEntries),
+      }));
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }, [user.id]);
+
   function onRouteChange(nextRoute) {
     if (nextRoute === "signout") {
-      setIsSignedIn(false);
       setImageURL("");
       setInput("");
+      setIsSignedIn(false);
       setRoute("signin");
     } else if (nextRoute === "signin") {
-      setIsSignedIn(false);
       setImageURL("");
       setInput("");
+      setIsSignedIn(false);
       setRoute("signin");
     } else if (nextRoute === "register") {
-      setIsSignedIn(false);
       setImageURL("");
       setInput("");
+      setIsSignedIn(false);
       setRoute("register");
     } else if (nextRoute === "home") {
-      setIsSignedIn(true);
       setImageURL("");
       setInput("");
+      setIsSignedIn(true);
       setRoute("home");
     }
   }
 
   const particlesLoaded = useCallback(async (container) => {
-    console.log("Particles container loaded", container);
+    // console.log("Particles container loaded", container);
   }, []);
 
   const options = useMemo(
@@ -132,12 +161,15 @@ function App() {
 
   return (
     <div className="App">
+      {/* Background particles effects */}
       <ParticlesProvider init={particlesInit}>
         <Particles
           id="tsparticles"
           particlesLoaded={particlesLoaded}
           options={options}
         />
+
+        {/* Main content wrapper*/}
         <main className="app-content">
           <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
           {route === "home" ? (
@@ -148,7 +180,13 @@ function App() {
                 onInputChange={onInputChange}
                 onButtonSubmit={onButtonSubmit}
               />
-              {imageURL && <FaceRecognition imageURL={imageURL} />}
+              {imageURL && (
+                <FaceRecognition
+                  imageURL={imageURL}
+                  userId={user.id}
+                  onDetectionSuccess={onDetectionSuccess}
+                />
+              )}
             </>
           ) : route === "signin" ? (
             <>
