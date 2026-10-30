@@ -18,10 +18,11 @@ const db = knex({
   client: "pg",
   connection: {
     host: process.env.DB_HOST,
-    API_PORT: process.env.DB_API_PORT,
+    db_port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    ssl: { rejectUnauthorized: false }, // For Render Postgress
   },
 });
 // console.log(db.select("*").from("users").then((data) => console.log(data)));
@@ -66,7 +67,7 @@ app.put("/image", async (req, res) => {
 });
 
 const API_PORT = process.env.API_PORT;
-app.listen(API_PORT, () => {
+app.listen(API_PORT, "0.0.0.0", () => {
   console.log(`App is running on API_PORT: http://localhost:${API_PORT}`);
 });
 

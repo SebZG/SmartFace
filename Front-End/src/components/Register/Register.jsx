@@ -1,4 +1,4 @@
-import "./Register";
+import "./Register.css";
 
 import { useState } from "react";
 
